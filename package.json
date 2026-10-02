@@ -1,0 +1,10 @@
+{
+  "name": "kingdom-rush-01",
+  "private": true,
+  "type": "module",
+  "description": "Tower defense web game. No build step; package.json only enables ES modules for the Node dev tools in tools/.",
+  "scripts": {
+    "sim": "node tools/simulate.js",
+    "check": "node tools/check-levels.js"
+  }
+}
