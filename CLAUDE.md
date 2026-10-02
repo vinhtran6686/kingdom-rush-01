@@ -47,12 +47,17 @@ js/
     tower.js          # Tháp bắn + doanh trại (sinh/hồi sinh lính, điểm tập kết)
     projectiles.js    # Homing (tên, tia phép) và Lobbed (đạn pháo, thiên thạch)
   render/             # Chỉ ĐỌC trạng thái game
-    renderer.js       # Vẽ một frame: nền, sắp xếp theo y, thanh máu, hiệu ứng, menu vòng tròn
-    sprites.js        # Hình vẽ tháp, quái, lính, anh hùng, đạn
-    terrain.js        # Bake nền bản đồ (theme, đường, cây, đá, cổng thành) vào canvas phụ
+    renderer.js       # Vẽ một frame: nền, sắp xếp theo y, thanh máu, đạn, hiệu ứng, menu vòng tròn
+    art.js            # Bộ vẽ "tranh vẽ tay" (viền đậm + đổ khối gradient) và SpriteCache
+    characters.js     # Nhân vật gốc (chibi) vẽ theo tư thế: đi / đánh / đứng / xoáy
+    units.js          # Chọn khung hình animation, vẽ nhân vật từ cache (lật hướng, nháy trắng)
+    towers.js         # Tháp theo cấp (thân tĩnh được cache + phần động: cung thủ, pha lê, nòng pháo, cờ)
+    particles.js      # Hạt trang trí: khói, mảnh vỡ, tia lửa, bụi, tuyết / lá / đom đóm
+    terrain.js        # Bake nền bản đồ (theme, đường, ao, cây, đá, hàng rào, cổng thành)
   ui/
-    hud.js            # HUD DOM trong trận + bảng thông tin
-    screens.js        # Menu, chọn màn (ảnh xem trước), overlay, hướng dẫn
+    hud.js            # HUD DOM trong trận + bảng thông tin + xem trước wave
+    icons.js          # Icon giao diện vẽ bằng canvas (tim, vàng, đầu lâu, chân dung nhân vật)
+    screens.js        # Menu (nền vẽ từ bản đồ), chọn màn, overlay, hướng dẫn
 tools/
   check-levels.js     # Kiểm tra dữ liệu màn (ô xây đè đường, path không tồn tại...)
   simulate.js         # Bot chơi tự động từng màn để kiểm tra lỗi & cân bằng
@@ -84,7 +89,10 @@ main.js  ──▶ Renderer.render(game)  +  GameUI.update()   (chỉ đọc)
 - **Tách logic khỏi hiển thị**: `game/` không truy cập DOM/`ctx`; `render/` và `ui/` không thay đổi trạng thái game
   (ui chỉ gọi các phương thức công khai của `Game`).
 - Thời gian tính bằng **giây**, tốc độ bằng **đơn vị thế giới / giây**.
-- Thêm tháp/quái/màn: khai báo trong `js/data/` trước, rồi thêm hành vi (`game/`) và hình vẽ (`render/sprites.js`).
+- Thêm tháp/quái/màn: khai báo trong `js/data/` trước, rồi thêm hành vi (`game/`) và hình vẽ
+  (`render/characters.js` → `UNIT_ART`, hoặc `render/towers.js` → `BODY`).
+- Đồ hoạ: vẽ bằng helper trong `art.js` (blob/rrect/poly/shape/limb) để giữ phong cách thống nhất.
+  Hàm vẽ nhân vật phải thuần theo `pose` (không đọc thời gian thật) để cache theo khung hình được.
 - Giữ code đơn giản, dễ đọc cho người học; tránh abstraction sớm.
 
 ## Chạy & kiểm tra

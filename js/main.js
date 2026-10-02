@@ -8,6 +8,8 @@ import { unlockAudio, playSfx, setMuted } from './core/audio.js';
 import { save } from './core/save.js';
 import { Renderer } from './render/renderer.js';
 import { GameUI } from './ui/hud.js';
+import { applyIcons } from './ui/icons.js';
+import { drawMenuBackground } from './ui/screens.js';
 import { showScreen, renderLevelList, showOverlay, hideOverlay, isUnlocked, HELP_HTML } from './ui/screens.js';
 
 const MAX_DT = 1 / 20;
@@ -37,6 +39,9 @@ setupInput(canvas, viewport, (x, y) => {
 window.addEventListener('pointerdown', unlockAudio, { capture: true });
 setMuted(save.muted);
 updateSoundLabel();
+applyIcons();
+drawMenuBackground();
+window.addEventListener('resize', drawMenuBackground);
 
 // ---------- Điều hướng ----------
 
@@ -44,6 +49,7 @@ function goMenu() {
   hideOverlay();
   game = null;
   showScreen('menu');
+  drawMenuBackground();
 }
 
 function goLevels() {
