@@ -3,36 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#2d3436">
+  <meta name="theme-color" content="#1b1410">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Kingdom Rush 01 — Tower Defense Prototype</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Game thủ thành (tower defense) chạy trên trình duyệt, chơi được trên điện thoại.">
+  <title>Pháo Đài Bình Minh — Tower Defense</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='14' y='22' width='36' height='36' fill='%239aa3a8' stroke='%23222' stroke-width='3'/%3E%3Cpath d='M10 24 L32 6 L54 24Z' fill='%23c9472c' stroke='%23222' stroke-width='3'/%3E%3Crect x='26' y='38' width='12' height='20' fill='%234a3423'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="app">
-    <header id="hud">
-      <div class="stats">
-        <span class="stat" title="Mạng"><span class="icon">❤️</span><b id="lives">20</b></span>
-        <span class="stat" title="Vàng"><span class="icon">🪙</span><b id="gold">0</b></span>
-        <span class="stat" title="Wave"><span class="icon">🚩</span><b id="wave">0/3</b></span>
-      </div>
-      <div class="controls">
-        <button id="btn-wave" class="primary">Bắt đầu wave 1</button>
-        <button id="btn-speed" aria-label="Tốc độ">x1</button>
-        <button id="btn-pause" aria-label="Tạm dừng">⏸</button>
-      </div>
-    </header>
-
-    <main id="stage">
-      <canvas id="game"></canvas>
-      <div id="overlay" hidden>
-        <div class="panel">
-          <h2 id="overlay-title"></h2>
-          <p id="overlay-text"></p>
-          <button id="btn-restart" class="primary">Chơi lại</button>
+    <!-- ============ MENU CHÍNH ============ -->
+    <section id="screen-menu" class="screen active">
+      <div class="menu-bg"></div>
+      <div class="menu-content">
+        <h1 class="title"><span>Pháo Đài</span><span>Bình Minh</span></h1>
+        <p class="tagline">Thủ thành • Xây tháp • Chặn đứng đại quân bóng tối</p>
+        <div class="menu-buttons">
+          <button class="btn big primary" data-action="play">Chơi</button>
+          <button class="btn" data-action="help">Hướng dẫn</button>
+          <button class="btn small" data-action="toggle-sound" id="menu-sound">🔊 Âm thanh: Bật</button>
         </div>
       </div>
-    </main>
+    </section>
+
+    <!-- ============ CHỌN MÀN ============ -->
+    <section id="screen-levels" class="screen">
+      <div class="levels-header">
+        <button class="btn small" data-action="menu">← Menu</button>
+        <h2>Chọn chiến trường</h2>
+        <span id="total-stars" class="total-stars">⭐ 0</span>
+      </div>
+      <div id="level-list" class="level-list"></div>
+    </section>
+
+    <!-- ============ TRONG TRẬN ============ -->
+    <section id="screen-game" class="screen">
+      <header id="hud">
+        <div class="stats">
+          <span class="stat" title="Mạng"><i>❤️</i><b id="hud-lives">20</b></span>
+          <span class="stat" title="Vàng"><i>🪙</i><b id="hud-gold">0</b></span>
+          <span class="stat" title="Wave"><i>💀</i><b id="hud-wave">0/0</b></span>
+        </div>
+        <div class="hud-buttons">
+          <button class="icon-btn" id="btn-speed" aria-label="Tốc độ">1x</button>
+          <button class="icon-btn" id="btn-pause" aria-label="Tạm dừng">❚❚</button>
+        </div>
+      </header>
+
+      <main id="stage">
+        <canvas id="game"></canvas>
+        <div id="info" class="info" hidden></div>
+        <div id="banner" class="banner" hidden></div>
+      </main>
+
+      <footer id="actionbar">
+        <button class="action hero" id="btn-hero" aria-label="Anh hùng">
+          <span class="portrait">⚔️</span>
+          <span class="hpbar"><span id="hero-hp"></span></span>
+          <span class="cd" id="hero-cd"></span>
+        </button>
+        <button class="action spell" id="btn-meteor" aria-label="Mưa thiên thạch">
+          <span class="portrait">☄️</span>
+          <span class="cd" id="meteor-cd"></span>
+        </button>
+        <button class="action spell" id="btn-militia" aria-label="Gọi dân quân">
+          <span class="portrait">🛡️</span>
+          <span class="cd" id="militia-cd"></span>
+        </button>
+        <button class="action wave" id="btn-wave" aria-label="Gọi wave">
+          <span class="wave-label" id="wave-label">Gọi wave</span>
+          <span class="wave-preview" id="wave-preview"></span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- ============ CỬA SỔ PHỦ ============ -->
+    <div id="overlay" class="overlay" hidden>
+      <div class="panel" id="panel"></div>
+    </div>
   </div>
 
   <script type="module" src="js/main.js"></script>

@@ -1,57 +1,182 @@
-// Điểm khởi động: nối Game (logic) + Viewport/Input + Renderer + HUD và chạy vòng lặp.
-import { Game } from './game.js';
-import { Viewport } from './viewport.js';
-import { setupInput } from './input.js';
-import { render } from './render.js';
-import { HUD } from './ui.js';
+// Điểm khởi động: điều hướng màn hình, vòng lặp game, âm thanh và lưu tiến độ.
+import { LEVELS } from './data/levels.js';
+import { Game, STATUS } from './game/game.js';
+import { Viewport } from './core/viewport.js';
+import { setupInput } from './core/input.js';
+import { unlockAudio, playSfx, setMuted } from './core/audio.js';
+import { save } from './core/save.js';
+import { Renderer } from './render/renderer.js';
+import { GameUI } from './ui/hud.js';
+import { showScreen, renderLevelList, showOverlay, hideOverlay, isUnlocked, HELP_HTML } from './ui/screens.js';
 
-const MAX_DT = 1 / 20; // tránh "nhảy cóc" khi tab bị treo rồi quay lại
-const SPEEDS = [1, 2];
+const MAX_DT = 1 / 20;
+const SPEEDS = [1, 2, 3];
 
 const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
 const viewport = new Viewport(canvas);
-const game = new Game();
+const renderer = new Renderer(canvas.getContext('2d'), viewport);
 
-const controls = {
-  speed: 1,
-  paused: false,
-  toggleSpeed() {
-    this.speed = SPEEDS[(SPEEDS.indexOf(this.speed) + 1) % SPEEDS.length];
-  },
-  togglePause() {
-    this.paused = !this.paused;
-  },
-  restart() {
-    game.reset();
-    this.paused = false;
-  },
-};
+const controls = { speed: 1, paused: false };
+let game = null;
+let levelIndex = 0;
+let endTimer = null;
 
-const hud = new HUD(game, controls);
+const ui = new GameUI({
+  onPause: () => openPause(),
+  onSpeed: () => {
+    controls.speed = SPEEDS[(SPEEDS.indexOf(controls.speed) + 1) % SPEEDS.length];
+  },
+});
+
 setupInput(canvas, viewport, (x, y) => {
-  if (!controls.paused) game.handleTap(x, y);
+  if (game && !controls.paused) game.handleTap(x, y);
 });
 
-// Tự tạm dừng khi chuyển tab / khoá màn hình.
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) controls.paused = true;
+// Trình duyệt chỉ cho phát âm thanh sau tương tác đầu tiên.
+window.addEventListener('pointerdown', unlockAudio, { capture: true });
+setMuted(save.muted);
+updateSoundLabel();
+
+// ---------- Điều hướng ----------
+
+function goMenu() {
+  hideOverlay();
+  game = null;
+  showScreen('menu');
+}
+
+function goLevels() {
+  hideOverlay();
+  game = null;
+  renderLevelList(startLevel);
+  showScreen('levels');
+}
+
+function startLevel(i) {
+  if (!isUnlocked(i)) return;
+  hideOverlay();
+  clearTimeout(endTimer);
+  levelIndex = i;
+  game = new Game(LEVELS[i]);
+  controls.paused = false;
+  controls.speed = 1;
+  ui.setGame(game);
+  showScreen('game');
+  viewport.resize();
+  ui.showBanner(LEVELS[i].name);
+  window.game = game; // tiện debug trong DevTools
+}
+
+function openPause() {
+  if (!game || game.ended) return;
+  controls.paused = true;
+  showOverlay(`<h2>Tạm dừng</h2><p>${LEVELS[levelIndex].name}</p>`, [
+    { label: 'Tiếp tục', primary: true, onClick: resume },
+    { label: 'Chơi lại', onClick: () => startLevel(levelIndex) },
+    { label: soundLabel(), onClick: () => { toggleSound(); openPause(); } },
+    { label: 'Bản đồ', onClick: goLevels },
+    { label: 'Hướng dẫn', onClick: () => showOverlay(HELP_HTML, [{ label: 'Quay lại', primary: true, onClick: openPause }]) },
+  ]);
+}
+
+function resume() {
+  hideOverlay();
+  controls.paused = false;
+}
+
+function showResult() {
+  const won = game.status === STATUS.WON;
+  if (won) save.setStars(game.level.id, game.stars);
+  const stars = game.stars;
+  const starHtml = [0, 1, 2].map((i) => `<span class="${i < stars ? '' : 'off'}">⭐</span>`).join('');
+  const hasNext = levelIndex < LEVELS.length - 1;
+  if (won) {
+    showOverlay(
+      `<h2>Chiến thắng!</h2><div class="result-stars">${starHtml}</div>
+       <p>Còn ${game.lives} mạng • Hạ ${game.stats.kills} quái</p>
+       ${hasNext ? '' : '<p>🏆 Bạn đã bảo vệ vương quốc khỏi Cự Thạch Vương!</p>'}`,
+      [
+        ...(hasNext ? [{ label: 'Màn tiếp ▶', primary: true, onClick: () => startLevel(levelIndex + 1) }] : []),
+        { label: 'Chơi lại', primary: !hasNext, onClick: () => startLevel(levelIndex) },
+        { label: 'Bản đồ', onClick: goLevels },
+      ],
+    );
+  } else {
+    showOverlay(`<h2>Thất thủ!</h2><p>Quái đã tràn qua ở wave ${game.waveIndex + 1}/${game.totalWaves}.</p>
+      <p>Mẹo: dùng Doanh trại chặn đường và nâng cấp tháp sớm.</p>`, [
+      { label: 'Thử lại', primary: true, onClick: () => startLevel(levelIndex) },
+      { label: 'Bản đồ', onClick: goLevels },
+    ]);
+  }
+}
+
+// ---------- Âm thanh ----------
+
+function soundLabel() {
+  return save.muted ? '🔇 Âm thanh: Tắt' : '🔊 Âm thanh: Bật';
+}
+
+function updateSoundLabel() {
+  document.getElementById('menu-sound').textContent = soundLabel();
+}
+
+function toggleSound() {
+  save.muted = !save.muted;
+  setMuted(save.muted);
+  updateSoundLabel();
+}
+
+// ---------- Nút menu chính ----------
+
+document.addEventListener('click', (e) => {
+  const action = e.target.closest('[data-action]')?.dataset.action;
+  if (action === 'play') goLevels();
+  else if (action === 'menu') goMenu();
+  else if (action === 'help') showOverlay(HELP_HTML, [{ label: 'Đã hiểu', primary: true, onClick: hideOverlay }]);
+  else if (action === 'toggle-sound') toggleSound();
 });
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) openPause();
+});
+
+// Phím tắt cho máy tính.
+document.addEventListener('keydown', (e) => {
+  if (!game) return;
+  if (e.key === 'Escape' || e.key === 'p') {
+    if (controls.paused) resume();
+    else openPause();
+  } else if (e.key === '1') game.beginSpell('meteor');
+  else if (e.key === '2') game.beginSpell('militia');
+  else if (e.key === 'h') game.selectHero();
+  else if (e.key === ' ' || e.key === 'w') game.callWave();
+});
+
+// ---------- Vòng lặp ----------
+
+function handleEvents() {
+  for (const ev of game.events) {
+    if (ev.type === 'sfx') playSfx(ev.data);
+    else if (ev.type === 'wave') {
+      ui.showBanner(ev.data === game.totalWaves ? 'Wave cuối!' : `Wave ${ev.data}`);
+    } else if (ev.type === 'leak' && navigator.vibrate) navigator.vibrate(60);
+    else if (ev.type === 'end') endTimer = setTimeout(showResult, 1400);
+  }
+  game.events.length = 0;
+}
 
 let last = performance.now();
 function frame(now) {
   const dt = Math.min((now - last) / 1000, MAX_DT);
   last = now;
-
-  if (!controls.paused) {
-    // Chạy nhiều bước nhỏ khi tăng tốc để va chạm vẫn chính xác.
-    for (let i = 0; i < controls.speed; i++) game.update(dt);
+  if (game) {
+    if (!controls.paused) {
+      for (let i = 0; i < controls.speed; i++) game.update(dt);
+    }
+    handleEvents();
+    renderer.render(game);
+    ui.update(controls);
   }
-  render(ctx, viewport, game);
-  hud.update();
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-
-// Tiện debug trong DevTools: window.game.gold = 999
-window.game = game;

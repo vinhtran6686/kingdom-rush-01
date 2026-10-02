@@ -1,6 +1,5 @@
 // Gom chuột và cảm ứng về một sự kiện "tap" duy nhất bằng Pointer Events.
-// Chỉ coi là tap nếu ngón tay không bị kéo đi quá xa.
-const MAX_TAP_MOVE = 14; // px màn hình
+const MAX_TAP_MOVE = 16; // px màn hình — kéo xa hơn thì không tính là chạm
 
 export function setupInput(canvas, viewport, onTap) {
   let start = null;
@@ -22,7 +21,5 @@ export function setupInput(canvas, viewport, onTap) {
   canvas.addEventListener('pointercancel', () => {
     start = null;
   });
-
-  // Chặn menu chuột phải / nhấn giữ trên mobile.
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 }

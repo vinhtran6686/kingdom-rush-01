@@ -1,42 +1,50 @@
-# kingdom-rush-01
+# Pháo Đài Bình Minh
 
-Prototype game **tower defense** lấy cảm hứng từ Kingdom Rush, viết bằng HTML + JavaScript thuần + Canvas.
-Không cần build, chơi được trên điện thoại (cảm ứng, màn dọc hoặc ngang).
+Game thủ thành (tower defense) chạy trên trình duyệt, viết bằng HTML + JavaScript thuần + Canvas.
+Không cần build, chơi được trên điện thoại (cảm ứng, màn dọc hoặc ngang) và máy tính.
+
+**Chơi ngay:** https://vinhtran6686.github.io/kingdom-rush-01/
+
+## Tính năng
+
+- **3 chiến trường**: Thung Lũng Sương, Ngã Ba Thu Phong (2 đường), Đèo Băng Giá (2 đường + trùm cuối).
+- **4 loại tháp × 3 cấp**: 🏹 Cung thủ • 🛡️ Doanh trại (3 lính chặn đường, đặt được điểm tập kết) • 🔮 Pháp sư (xuyên giáp) • 💣 Pháo đài (nổ lan).
+- **Anh hùng** Hiệp Sĩ Bình Minh: điều khiển bằng cách chạm, tự hồi máu, có kỹ năng Chém Xoáy, hồi sinh khi ngã.
+- **2 phép**: ☄️ Mưa Thiên Thạch và 🛡️ Dân Quân.
+- **7 loại quái**: yêu tinh, thảo khấu (giáp), sói (nhanh), pháp sư bộ lạc (kháng phép, hồi máu), dơi (bay), quỷ núi (giáp dày, tự hồi), Cự Thạch Vương (trùm).
+- Xem trước wave, **gọi wave sớm** để nhận thêm vàng, tốc độ 1x/2x/3x, chấm 1–3 ⭐, lưu tiến độ trên máy.
+- Toàn bộ hình ảnh vẽ bằng code, âm thanh tổng hợp bằng Web Audio — không dùng asset của bất kỳ game nào khác.
 
 ## Cách chơi
 
-- Chạm vào **ô đất** (có dấu +) → chạm nút xanh để **xây tháp cung** (70 vàng).
-- Chạm vào tháp đã xây → nút đỏ để **bán** (hoàn 60%).
-- Bấm **Bắt đầu wave** khi đã sẵn sàng. Có 3 wave; giết quái được vàng, dọn sạch wave được thưởng.
-- Quái lọt qua cuối đường sẽ trừ **mạng**. Hết mạng là thua, sống sót qua wave 3 là thắng.
-- `x1/x2`: đổi tốc độ game. `⏸`: tạm dừng.
+1. Chạm vào **ô đất** trống → chọn tháp (chạm 1 lần xem thông tin, chạm lần nữa để xây).
+2. Chạm vào **đầu lâu** ở lối vào (hoặc nút "Bắt đầu!") để gọi wave.
+3. Chạm vào tháp để **nâng cấp / bán**; doanh trại có nút 🚩 đặt điểm tập kết.
+4. Chạm vào **hiệp sĩ** (hoặc nút ⚔️) rồi chạm nơi muốn tới.
+5. Chọn **phép** ở thanh dưới rồi chạm lên bản đồ.
+
+Phím tắt trên máy tính: `Space` gọi wave, `1`/`2` phép, `H` anh hùng, `Esc` tạm dừng.
 
 ## Chạy ở máy
 
-Game dùng ES modules nên cần chạy qua một web server tĩnh (mở trực tiếp `index.html` bằng `file://` sẽ không chạy):
+Game dùng ES modules nên cần một web server tĩnh:
 
 ```bash
-# Python 3
 python3 -m http.server 8000
-
-# hoặc Node.js
-npx serve .
+# mở http://localhost:8000
 ```
 
-Rồi mở <http://localhost:8000>.
+Công cụ cho người phát triển (cần Node.js 18+):
 
-Để thử trên điện thoại trong cùng mạng Wi-Fi: mở `http://<IP-máy-tính>:8000` trên điện thoại.
+```bash
+node tools/check-levels.js   # kiểm tra dữ liệu màn chơi
+node tools/simulate.js 6     # bot tự chơi để kiểm tra cân bằng
+```
 
-## Deploy lên GitHub Pages
+## Deploy
 
-1. Vào **Settings → Pages** của repo.
-2. **Source**: *Deploy from a branch*, chọn branch `main`, thư mục `/ (root)`.
-3. Sau vài phút, game có ở `https://<username>.github.io/kingdom-rush-01/`.
+GitHub Pages: **Settings → Pages → Deploy from a branch → `main` / `(root)`**. Không có bước build.
 
-Không có bước build — GitHub Pages phục vụ trực tiếp các file trong repo (file `.nojekyll` tắt xử lý Jekyll).
+## Phát triển
 
-## Cấu trúc & phát triển
-
-Xem [CLAUDE.md](CLAUDE.md) để biết cấu trúc thư mục, quy ước code và hướng phát triển. Số liệu cân bằng (tháp, quái, wave) nằm trong `js/config.js`.
-
-Mọi hình ảnh đều được vẽ bằng hình khối Canvas; project không dùng asset của game gốc.
+Xem [CLAUDE.md](CLAUDE.md) để biết kiến trúc, quy ước code và hướng phát triển. Số liệu cân bằng nằm trong `js/data/`.
