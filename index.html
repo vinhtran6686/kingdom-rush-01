@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2d3436">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Kingdom Rush 01 — Tower Defense Prototype</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header id="hud">
+      <div class="stats">
+        <span class="stat" title="Mạng"><span class="icon">❤️</span><b id="lives">20</b></span>
+        <span class="stat" title="Vàng"><span class="icon">🪙</span><b id="gold">0</b></span>
+        <span class="stat" title="Wave"><span class="icon">🚩</span><b id="wave">0/3</b></span>
+      </div>
+      <div class="controls">
+        <button id="btn-wave" class="primary">Bắt đầu wave 1</button>
+        <button id="btn-speed" aria-label="Tốc độ">x1</button>
+        <button id="btn-pause" aria-label="Tạm dừng">⏸</button>
+      </div>
+    </header>
+
+    <main id="stage">
+      <canvas id="game"></canvas>
+      <div id="overlay" hidden>
+        <div class="panel">
+          <h2 id="overlay-title"></h2>
+          <p id="overlay-text"></p>
+          <button id="btn-restart" class="primary">Chơi lại</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
