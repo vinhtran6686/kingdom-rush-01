@@ -1,0 +1,166 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #1e272e;
+  color: #f5f6fa;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  /* Tắt highlight/xoay chọn chữ khi chạm trên mobile */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* ---------- HUD ---------- */
+#hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #2d3436;
+  border-bottom: 2px solid #111;
+}
+
+.stats,
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.controls {
+  gap: 6px;
+}
+
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 18px;
+}
+
+.stat b {
+  min-width: 2ch;
+  font-variant-numeric: tabular-nums;
+}
+
+button {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  min-height: 40px;
+  min-width: 44px;
+  padding: 6px 12px;
+  border: 2px solid #111;
+  border-radius: 8px;
+  background: #636e72;
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button.primary {
+  background: #e17055;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+/* ---------- Khu vực canvas ---------- */
+#stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+#game {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Chặn cuộn/zoom của trình duyệt để nhận trọn sự kiện chạm */
+  touch-action: none;
+}
+
+#overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+#overlay[hidden] {
+  display: none;
+}
+
+.panel {
+  background: #2d3436;
+  border: 3px solid #111;
+  border-radius: 12px;
+  padding: 20px 28px;
+  text-align: center;
+  max-width: 90%;
+}
+
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.panel p {
+  margin: 0 0 16px;
+}
+
+/* ---------- Màn hình ngang thấp (điện thoại xoay ngang): HUD thành cột bên trái ---------- */
+@media (orientation: landscape) and (max-height: 600px) {
+  #app {
+    flex-direction: row;
+  }
+
+  #hud {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 150px;
+    border-bottom: none;
+    border-right: 2px solid #111;
+  }
+
+  .stats,
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .controls {
+    margin-top: auto;
+  }
+}
