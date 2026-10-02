@@ -9,7 +9,7 @@
   <meta name="description" content="Game thủ thành (tower defense) chạy trên trình duyệt, chơi được trên điện thoại.">
   <title>Pháo Đài Bình Minh — Tower Defense</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='14' y='22' width='36' height='36' fill='%239aa3a8' stroke='%23222' stroke-width='3'/%3E%3Cpath d='M10 24 L32 6 L54 24Z' fill='%23c9472c' stroke='%23222' stroke-width='3'/%3E%3Crect x='26' y='38' width='12' height='20' fill='%234a3423'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
   <div id="app">
@@ -84,6 +84,20 @@
     </div>
   </div>
 
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js?v=3"></script>
+  <script>
+    // Nếu module game không tải được (trình duyệt quá cũ, lỗi mạng, cache cũ) thì báo rõ thay vì im lặng.
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (window.__gameBooted) return;
+        var el = document.createElement('div');
+        el.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:99;padding:14px;border-radius:12px;' +
+          'background:#7a2d22;color:#fff;font:15px system-ui,sans-serif;text-align:center';
+        el.innerHTML = 'Không tải được game. Hãy tải lại trang (kéo xuống để làm mới) hoặc cập nhật trình duyệt.' +
+          '<br><button onclick="location.reload()" style="margin-top:8px;padding:8px 18px;font:inherit">Tải lại</button>';
+        document.body.appendChild(el);
+      }, 2500);
+    });
+  </script>
 </body>
 </html>

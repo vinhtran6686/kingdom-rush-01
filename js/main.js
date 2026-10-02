@@ -1,4 +1,5 @@
 // Điểm khởi động: điều hướng màn hình, vòng lặp game, âm thanh và lưu tiến độ.
+import './core/compat.js'; // phải đứng đầu: vá API canvas cho trình duyệt cũ
 import { LEVELS } from './data/levels.js';
 import { Game, STATUS } from './game/game.js';
 import { Viewport } from './core/viewport.js';
@@ -165,18 +166,36 @@ function handleEvents() {
   game.events.length = 0;
 }
 
+// Hiện lỗi ngay trên màn hình (điện thoại không có DevTools) thay vì im lặng đứng hình.
+let errorShown = false;
+function reportError(err) {
+  console.error(err);
+  if (errorShown) return;
+  errorShown = true;
+  controls.paused = true;
+  showOverlay(`<h2>Có lỗi xảy ra</h2><p>${String(err?.message || err)}</p>
+    <p>Hãy chụp màn hình này gửi cho người phát triển, rồi thử tải lại trang.</p>`, [
+    { label: 'Tải lại', primary: true, onClick: () => location.reload() },
+  ]);
+}
+
 let last = performance.now();
 function frame(now) {
+  // Đặt lịch frame sau TRƯỚC khi chạy, để một lỗi không làm dừng hẳn vòng lặp.
+  requestAnimationFrame(frame);
   const dt = Math.min((now - last) / 1000, MAX_DT);
   last = now;
-  if (game) {
+  if (!game) return;
+  try {
     if (!controls.paused) {
       for (let i = 0; i < controls.speed; i++) game.update(dt);
     }
     handleEvents();
     renderer.render(game);
     ui.update(controls);
+  } catch (err) {
+    reportError(err);
   }
-  requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+window.__gameBooted = true;
