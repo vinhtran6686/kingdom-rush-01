@@ -88,3 +88,21 @@ export const HELP_HTML = `<h2>Hướng dẫn</h2>
   <li><b>Giáp</b> giảm sát thương vật lý, <b>kháng phép</b> giảm sát thương phép — chọn tháp phù hợp!</li>
   <li>Giữ ≥18 mạng để được 3 ⭐. Thắng màn trước để mở màn sau.</li>
 </ul>`;
+
+// Nền menu chính: bản đồ đầu tiên vẽ phóng to, phủ lớp tối ấm để làm nổi tiêu đề.
+export function drawMenuBackground() {
+  const c = document.getElementById('menu-bg');
+  if (!c || !c.offsetWidth) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.round(c.offsetWidth * dpr);
+  c.height = Math.round(c.offsetHeight * dpr);
+  const g = c.getContext('2d');
+  const img = levelPreview(LEVELS[0]);
+  const cover = Math.max(c.width, c.height) * 1.05;
+  g.drawImage(img, (c.width - cover) / 2, (c.height - cover) / 2, cover, cover);
+  const grad = g.createRadialGradient(c.width / 2, c.height * 0.42, 0, c.width / 2, c.height * 0.42, Math.max(c.width, c.height) * 0.7);
+  grad.addColorStop(0, 'rgba(30,18,8,0.35)');
+  grad.addColorStop(1, 'rgba(20,10,4,0.85)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, c.width, c.height);
+}

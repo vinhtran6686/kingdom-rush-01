@@ -3,10 +3,10 @@
 import { TOWERS } from '../data/towers.js';
 import { HERO, SPELLS } from '../data/hero.js';
 import { STATUS } from '../game/game.js';
+import { enemyIcon } from './icons.js';
 
 const $ = (id) => document.getElementById(id);
 
-const ENEMY_ICON = { goblin: '👺', bandit: '🗡️', wolf: '🐺', shaman: '🪶', bat: '🦇', troll: '👹', golem: '🗿' };
 
 const pct = (v) => `${Math.round(v * 100)}%`;
 const dmg = ([a, b]) => `${a}–${b}`;
@@ -109,9 +109,9 @@ export class GameUI {
     this.set('waveLabel', label, (v) => (el.waveLabel.textContent = v));
     this.set('waveEnabled', g.canCallWave, (v) => (el.waveBtn.disabled = !v));
     const preview = g.canCallWave
-      ? g.nextWavePreview().map((p) => `${ENEMY_ICON[p.type]}×${p.count}`).join(' ')
+      ? g.nextWavePreview().map((p) => `<span class="foe"><img src="${enemyIcon(p.type)}" alt="">×${p.count}</span>`).join('')
       : '';
-    this.set('wavePreview', preview, (v) => (el.wavePreview.textContent = v));
+    this.set('wavePreview', preview, (v) => (el.wavePreview.innerHTML = v));
 
     this.set('info', this.infoHtml(), (v) => {
       el.info.hidden = !v;

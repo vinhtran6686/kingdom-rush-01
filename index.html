@@ -9,13 +9,13 @@
   <meta name="description" content="Game thủ thành (tower defense) chạy trên trình duyệt, chơi được trên điện thoại.">
   <title>Pháo Đài Bình Minh — Tower Defense</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='14' y='22' width='36' height='36' fill='%239aa3a8' stroke='%23222' stroke-width='3'/%3E%3Cpath d='M10 24 L32 6 L54 24Z' fill='%23c9472c' stroke='%23222' stroke-width='3'/%3E%3Crect x='26' y='38' width='12' height='20' fill='%234a3423'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
   <div id="app">
     <!-- ============ MENU CHÍNH ============ -->
     <section id="screen-menu" class="screen active">
-      <div class="menu-bg"></div>
+      <canvas class="menu-bg" id="menu-bg"></canvas>
       <div class="menu-content">
         <h1 class="title"><span>Pháo Đài</span><span>Bình Minh</span></h1>
         <p class="tagline">Thủ thành • Xây tháp • Chặn đứng đại quân bóng tối</p>
@@ -41,9 +41,9 @@
     <section id="screen-game" class="screen">
       <header id="hud">
         <div class="stats">
-          <span class="stat" title="Mạng"><i>❤️</i><b id="hud-lives">20</b></span>
-          <span class="stat" title="Vàng"><i>🪙</i><b id="hud-gold">0</b></span>
-          <span class="stat" title="Wave"><i>💀</i><b id="hud-wave">0/0</b></span>
+          <span class="stat" title="Mạng"><i class="ico" data-icon="heart"></i><b id="hud-lives">20</b></span>
+          <span class="stat" title="Vàng"><i class="ico" data-icon="coin"></i><b id="hud-gold">0</b></span>
+          <span class="stat" title="Wave"><i class="ico" data-icon="skull"></i><b id="hud-wave">0/0</b></span>
         </div>
         <div class="hud-buttons">
           <button class="icon-btn" id="btn-speed" aria-label="Tốc độ">1x</button>
@@ -59,16 +59,16 @@
 
       <footer id="actionbar">
         <button class="action hero" id="btn-hero" aria-label="Anh hùng">
-          <span class="portrait">⚔️</span>
+          <span class="portrait" data-icon="hero"></span>
           <span class="hpbar"><span id="hero-hp"></span></span>
           <span class="cd" id="hero-cd"></span>
         </button>
         <button class="action spell" id="btn-meteor" aria-label="Mưa thiên thạch">
-          <span class="portrait">☄️</span>
+          <span class="portrait" data-icon="meteor"></span>
           <span class="cd" id="meteor-cd"></span>
         </button>
         <button class="action spell" id="btn-militia" aria-label="Gọi dân quân">
-          <span class="portrait">🛡️</span>
+          <span class="portrait" data-icon="militia"></span>
           <span class="cd" id="militia-cd"></span>
         </button>
         <button class="action wave" id="btn-wave" aria-label="Gọi wave">
@@ -84,7 +84,7 @@
     </div>
   </div>
 
-  <script type="module" src="js/main.js?v=3"></script>
+  <script type="module" src="js/main.js?v=4"></script>
   <script>
     // Nếu module game không tải được (trình duyệt quá cũ, lỗi mạng, cache cũ) thì báo rõ thay vì im lặng.
     window.addEventListener('load', function () {
